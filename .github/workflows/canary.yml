@@ -64,9 +64,9 @@ jobs:
       - name: Write attestations
         run: sh scripts/write-attestations.sh attestations.json
       - name: Report to Prodgator
-        uses: prodgator/prodgator-action@2814cda45fa85ca8ffcc7a96e648e31c434fa0f3 # v1.0.1
+        uses: prodgator/prodgator-action@ed8fb351bfd9d38c77052bcb082f1cf7681a83a2 # v1.1.0
         with:
-          spindle-url: https://api.prodgator.dev
+          prodgator-url: https://api.prodgator.dev
           junit: fixtures/junit.xml
           attestations: attestations.json
           artifacts: |
