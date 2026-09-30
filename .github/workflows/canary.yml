@@ -1,0 +1,93 @@
+name: canary
+
+# Exercises Prodgator's GitHub integration end to end: workflow run webhooks,
+# the report action (test results, coverage, SBOM, SARIF findings, an
+# artifact) and a deployment gated by the Prodgator protection rule.
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      manual_deploy:
+        description: 'Also run the deploy-manual job (waits for a person to approve it in Prodgator)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate fixtures
+        run: sh scripts/validate.sh
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build artifact
+        run: |
+          mkdir -p dist
+          {
+            echo "prodgator canary build"
+            echo "commit: ${GITHUB_SHA}"
+            echo "run: ${GITHUB_RUN_ID} attempt ${GITHUB_RUN_ATTEMPT}"
+            echo "built: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > dist/canary-build.txt
+          cat dist/canary-build.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: canary-build
+          path: dist/canary-build.txt
+          retention-days: 1
+
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [test, build]
+    if: always()
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: canary-build
+          path: dist
+      - name: Write attestations
+        run: sh scripts/write-attestations.sh attestations.json
+      - name: Report to Prodgator
+        uses: prodgator/prodgator-action@2814cda45fa85ca8ffcc7a96e648e31c434fa0f3 # v1.0.1
+        with:
+          spindle-url: https://api.prodgator.dev
+          junit: fixtures/junit.xml
+          attestations: attestations.json
+          artifacts: |
+            dist/canary-build.txt
+            fixtures/coverage/cobertura.xml
+
+  deploy-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [test, build, report]
+    environment: canary
+    steps:
+      - name: Deploy
+        run: echo "Canary deployment passed the Prodgator gate for ${GITHUB_SHA}."
+
+  deploy-manual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [test, build, report]
+    if: github.event_name == 'workflow_dispatch' && inputs.manual_deploy
+    environment: canary-manual
+    steps:
+      - name: Deploy
+        run: echo "Manual canary deployment approved in Prodgator for ${GITHUB_SHA}."

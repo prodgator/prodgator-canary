@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="canary" tests="4" failures="0" errors="0" skipped="0" time="0.042">
+  <testsuite name="canary.fixtures" tests="4" failures="0" errors="0" skipped="0" time="0.042">
+    <testcase classname="canary.fixtures" name="junit fixture is well formed" time="0.010"/>
+    <testcase classname="canary.fixtures" name="coverage fixture has a line rate" time="0.011"/>
+    <testcase classname="canary.fixtures" name="sbom fixture lists components" time="0.010"/>
+    <testcase classname="canary.fixtures" name="sarif fixture has only low findings" time="0.011"/>
+  </testsuite>
+</testsuites>

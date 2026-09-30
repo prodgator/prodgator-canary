@@ -1,0 +1,71 @@
+name: pr-gate-canary
+
+# Exercises the Prodgator pull request gate: opens a throwaway pull request,
+# waits for the "Prodgator policies" check to fail (the policy needs the
+# `ready` label), adds the label, waits for the check to pass, then closes
+# the pull request and deletes its branch.
+on:
+  schedule:
+    - cron: '41 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pr-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: canary/pr-${{ github.run_id }}
+      CHECK_PATTERN: 'prodgator.*polic'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Open a pull request
+        id: pr
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          mkdir -p pr-canary
+          echo "PR gate canary run ${GITHUB_RUN_ID} at $(date -u +%Y-%m-%dT%H:%M:%SZ)" > pr-canary/run.txt
+          git add pr-canary/run.txt
+          git commit -m "PR gate canary ${GITHUB_RUN_ID}"
+          git push origin "$BRANCH"
+          url=$(gh pr create --base main --head "$BRANCH" \
+            --title "PR gate canary ${GITHUB_RUN_ID}" \
+            --body "Opened by the pr-gate-canary workflow to check the Prodgator pull request gate. It is closed automatically.")
+          number="${url##*/}"
+          echo "Opened pull request #${number}: ${url}"
+          echo "number=${number}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for the Prodgator check to fail without the label
+        env:
+          PR: ${{ steps.pr.outputs.number }}
+        run: sh scripts/wait-for-check.sh "$PR" fail 600
+
+      - name: Add the ready label
+        env:
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          gh label create ready --color 0E8A16 --description "Ready for review (PR gate canary)" --force
+          gh pr edit "$PR" --add-label ready
+          echo "Added label ready to #${PR}."
+
+      - name: Wait for the Prodgator check to pass with the label
+        env:
+          PR: ${{ steps.pr.outputs.number }}
+        run: sh scripts/wait-for-check.sh "$PR" pass 600
+
+      - name: Close the pull request and delete the branch
+        if: always()
+        env:
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          if [ -n "${PR}" ]; then
+            gh pr close "$PR" --delete-branch --comment "PR gate canary finished." || true
+          fi
+          git push origin --delete "$BRANCH" 2>/dev/null || true

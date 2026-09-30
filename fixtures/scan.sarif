@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "canary-fixture-scanner",
+          "version": "1.0.0",
+          "informationUri": "https://github.com/prodgator/prodgator-canary",
+          "rules": [
+            {
+              "id": "CANARY001",
+              "name": "SyntheticTodoComment",
+              "shortDescription": { "text": "Canary fixture: synthetic TODO comment finding" },
+              "fullDescription": { "text": "Synthetic finding from the canary fixture. It is not a real issue and exists only to check that findings are ingested." },
+              "defaultConfiguration": { "level": "note" },
+              "properties": { "security-severity": "2.0", "tags": ["canary-fixture"] }
+            },
+            {
+              "id": "CANARY002",
+              "name": "SyntheticConsoleLog",
+              "shortDescription": { "text": "Canary fixture: synthetic console.log finding" },
+              "fullDescription": { "text": "Synthetic finding from the canary fixture. It is not a real issue and exists only to check that findings are ingested." },
+              "defaultConfiguration": { "level": "note" },
+              "properties": { "security-severity": "1.5", "tags": ["canary-fixture"] }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CANARY001",
+          "ruleIndex": 0,
+          "level": "note",
+          "message": { "text": "Canary fixture: synthetic TODO comment in sample/hello.js. Not a real finding." },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "sample/hello.js" },
+                "region": { "startLine": 3 }
+              }
+            }
+          ],
+          "partialFingerprints": { "primaryLocationLineHash": "canary-fixture-0001" },
+          "properties": { "security-severity": "2.0" }
+        },
+        {
+          "ruleId": "CANARY002",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": { "text": "Canary fixture: synthetic console.log call in sample/hello.js. Not a real finding." },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "sample/hello.js" },
+                "region": { "startLine": 7 }
+              }
+            }
+          ],
+          "partialFingerprints": { "primaryLocationLineHash": "canary-fixture-0002" },
+          "properties": { "security-severity": "1.5" }
+        }
+      ]
+    }
+  ]
+}
