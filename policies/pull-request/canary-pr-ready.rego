@@ -5,7 +5,7 @@
 # the "Prodgator policies" check to fail, adds the label and expects it to
 # pass.
 #
-# This file lives outside .spindle/policies/ on purpose: policies read from
+# This file lives outside .prodgator/policies/ on purpose: policies read from
 # that folder are release policies, and a repository file cannot yet set
 # "Used for: Pull requests" or carry a pull request binding. Import this
 # file in Prodgator (Gates, Policies, Import .rego), set Used for to Pull

@@ -34,17 +34,17 @@ gh workflow run pr-gate-canary.yml -R prodgator/prodgator-canary
 
 ## Policies
 
-- `.spindle/policies/canary-auto-pass.rego` is read by Prodgator on every push to `main` that changes that folder. It is an enforce release policy bound to the `canary` environment of this repository and the `canary.yml` workflow. It approves when the newest trusted JUnit test results attestation for the commit passed, and rejects otherwise. Its tests are in `canary-auto-pass_test.rego`.
-- `policies/pull-request/canary-pr-ready.rego` passes a pull request only when it has the `ready` label. It sits outside `.spindle/policies/` because a repository policy file cannot set "Used for: Pull requests" or hold a pull request binding yet. It is imported in Prodgator by hand (see below).
+- `.prodgator/policies/canary-auto-pass.rego` is read by Prodgator on every push to `main` that changes that folder. It is an enforce release policy bound to the `canary` environment of this repository and the `canary.yml` workflow. It approves when the newest trusted JUnit test results attestation for the commit passed, and rejects otherwise. Its tests are in `canary-auto-pass_test.rego`.
+- `policies/pull-request/canary-pr-ready.rego` passes a pull request only when it has the `ready` label. It sits outside `.prodgator/policies/` because a repository policy file cannot set "Used for: Pull requests" or hold a pull request binding yet. It is imported in Prodgator by hand (see below).
 
 Run the policy tests locally with [OPA](https://www.openpolicyagent.org/docs/latest/#running-opa):
 
 ```bash
-opa test -v .spindle/policies/
+opa test -v .prodgator/policies/
 opa test -v policies/pull-request/
 ```
 
-Anyone who can push to `main` can change the release policy, so protect `main` (and `.spindle/policies/`) with branch protection and code owners.
+Anyone who can push to `main` can change the release policy, so protect `main` (and `.prodgator/policies/`) with branch protection and code owners.
 
 ## Setup
 
@@ -52,7 +52,7 @@ Done in code or by API:
 
 - The Prodgator (dev) GitHub App is installed on this repository.
 - GitHub environments `canary` and `canary-manual` exist, each with the Prodgator app as a custom deployment protection rule.
-- The `Canary auto-pass` release policy comes from `.spindle/policies/`.
+- The `Canary auto-pass` release policy comes from `.prodgator/policies/`.
 
 Done by hand:
 
