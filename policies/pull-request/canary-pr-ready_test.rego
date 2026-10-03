@@ -1,8 +1,8 @@
-package spindle.policy_test
+package prodgator.policy_test
 
-import data.spindle.policy
+import data.prodgator.policy
 
-pr(labels) := {"version": "spindle.input/v1", "subject": "pull_request", "labels": labels}
+pr(labels) := {"version": "prodgator.input/v1", "subject": "pull_request", "labels": labels}
 
 test_ready_label_passes if {
 	r := policy.results[0] with input as pr(["ready", "docs"])

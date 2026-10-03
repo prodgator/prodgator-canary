@@ -1,6 +1,6 @@
-package spindle.policy_test
+package prodgator.policy_test
 
-import data.spindle.policy
+import data.prodgator.policy
 
 junit(status, trusted) := {
 	"kind": "test-results",
@@ -10,7 +10,7 @@ junit(status, trusted) := {
 	"data": {"passed": 4, "failed": 0, "skipped": 0, "errors": 0},
 }
 
-release(attestations) := {"version": "spindle.input/v1", "subject": "release", "attestations": attestations}
+release(attestations) := {"version": "prodgator.input/v1", "subject": "release", "attestations": attestations}
 
 test_passing_junit_approves if {
 	r := policy.results[0] with input as release([junit("pass", true)])

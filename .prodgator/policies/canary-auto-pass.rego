@@ -10,13 +10,13 @@
 # title: "Canary auto-pass"
 # description: "Approves canary deployments when the JUnit test results attestation for the commit passed."
 # custom:
-#   spindle:
+#   prodgator:
 #     format: 1
 #     mode: "enforce"
 #     bindings:
 #       - environment: "canary"
 #         workflow: "canary.yml"
-package spindle.policy
+package prodgator.policy
 
 attestations_readable if is_array(input.attestations)
 

@@ -15,10 +15,10 @@
 # title: "Canary PR ready label"
 # description: "Pull requests to main need the ready label."
 # custom:
-#   spindle:
+#   prodgator:
 #     format: 1
 #     mode: "enforce"
-package spindle.policy
+package prodgator.policy
 
 labels_readable if is_array(input.labels)
 
