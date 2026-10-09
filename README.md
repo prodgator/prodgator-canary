@@ -60,3 +60,7 @@ Done by hand:
 2. For `pr-gate-canary.yml`: allow GitHub Actions to create pull requests (organization Settings, Actions, General, Workflow permissions, "Allow GitHub Actions to create and approve pull requests", then the same setting on this repository).
 
 Nothing is bound to `canary-manual` on purpose: with no policy, Prodgator leaves its protection rule waiting for a person, which is the manual approval path.
+
+## Redeploys
+
+The scheduled canary redeploys the head commit of `main`. Deployments to a protected environment need a recorded change for that commit, so the head has to be a commit that landed after change recording started. Last refreshed: 2026-10-09.
