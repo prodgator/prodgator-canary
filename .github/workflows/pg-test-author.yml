@@ -1,0 +1,28 @@
+name: pg-test-author
+
+# TEMPORARY (Prodgator #1465 dev checks): opens a pull request from the pushed
+# test branch as github-actions[bot], so a person can review it as themselves.
+on:
+  push:
+    branches: ['pg-test/**']
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Open the pull request if none is open
+        run: |
+          if [ -n "$(gh pr list --head "$GITHUB_REF_NAME" --state open --json number -q '.[0].number')" ]; then
+            echo "already open"; exit 0
+          fi
+          gh pr create --base main --head "$GITHUB_REF_NAME" \
+            --title "TEST provider actions: $GITHUB_REF_NAME" \
+            --body "Temporary test pull request for Prodgator dev checks. Closed when the checks end."
