@@ -1,0 +1,29 @@
+name: jsm-check
+
+# Temporary, for the Jira Service Management change management dev check
+# (PG-375). Deploys to the jsm-check environment, which only the temporary
+# "TEST JSM change check" gate in Prodgator dev covers. The run title carries
+# the change key, so each scenario starts it with its own title. Run it from a
+# fresh branch per scenario: a change binds to one commit and environment.
+# Remove this workflow, the environment and the gate when the check ends.
+run-name: ${{ inputs.title }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Run title: name the change key here (for example "Deploy CM-12"), or leave the key out to test create'
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-jsm-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: jsm-check
+    steps:
+      - name: Deploy
+        run: echo "jsm-check deployment passed the Prodgator gate for ${GITHUB_SHA}."
