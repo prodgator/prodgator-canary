@@ -64,3 +64,5 @@ Nothing is bound to `canary-manual` on purpose: with no policy, Prodgator leaves
 ## Redeploys
 
 The scheduled canary redeploys the head commit of `main`. Deployments to a protected environment need a recorded change for that commit, so the head has to be a commit that landed after change recording started. Last refreshed: 2026-10-09.
+
+Changes made by agents in this repository come from `prodgator-agent[bot]` through the Prodgator token broker (PG-408).
